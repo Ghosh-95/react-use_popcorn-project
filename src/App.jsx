@@ -4,8 +4,9 @@ import { DATA_URL, tempMovieData, tempWatchedData } from "./data.js.js";
 import Navbar, { Results, SearchInput } from "./components/Navbar.jsx";
 import MoviesList from "./components/LeftBox.jsx";
 import Box from "./components/Box.jsx";
-import { WatchSummery, WatchedMoviesList } from "./components/WatchBox.jsx";
+import { WatchSummery, WatchedMoviesList, SelectedMovie } from "./components/WatchBox.jsx";
 import Loader from "./components/Loader.jsx";
+import ErrorMessage from "./components/ErrorMessage.jsx";
 
 export default function App() {
     const [query, setQuery] = useState("inception");
@@ -13,6 +14,7 @@ export default function App() {
     const [watched, setWatched] = useState(tempWatchedData);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
+    const [selectedMovieID, setSelectedMovieID] = useState(null);
 
 
     useEffect(() => {
@@ -46,11 +48,13 @@ export default function App() {
         };
     };
 
-
-    function ErrorMessage({ message }) {
-        return <p style={{ fontSize: "2rem", position: "absolute", left: "35%", top: "40%" }}>{message} ⚠️</p>
+    function handleSelectMovieID(id) {
+        setSelectedMovieID(curId => curId === id ? null : id);
     };
 
+    function handleCloseMovieID() {
+        setSelectedMovieID(null);
+    };
 
     return (
         <>
@@ -62,13 +66,17 @@ export default function App() {
             <main className="main">
                 <Box >
                     {isLoading && <Loader />}
-                    {!isLoading && !error && <MoviesList movies={movies} />}
+                    {!isLoading && !error && <MoviesList movies={movies} onSelectMovieID={handleSelectMovieID} />}
                     {error && <ErrorMessage message={error} />}
                 </Box>
 
                 <Box>
-                    <WatchSummery watched={watched} />
-                    <WatchedMoviesList watched={watched} />
+                    {selectedMovieID ? <SelectedMovie selectedMovieID={selectedMovieID} onCloseMovieID={handleCloseMovieID} /> : (
+                        <>
+                            <WatchSummery watched={watched} />
+                            <WatchedMoviesList watched={watched} />
+                        </>
+                    )}
                 </Box>
 
             </main>

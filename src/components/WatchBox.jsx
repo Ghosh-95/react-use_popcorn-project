@@ -1,4 +1,7 @@
-import { average } from "../data.js.js";
+import { useEffect, useState } from "react";
+import { average, DATA_URL } from "../data.js.js";
+import StarRating from "./StarRating.jsx";
+import Loader from "./Loader.jsx";
 
 export function WatchSummery({ watched }) {
     const avgImdbRating = average(watched.map((movie) => movie.imdbRating));
@@ -40,6 +43,59 @@ export function WatchedMoviesList({ watched }) {
 
     );
 };
+
+export function SelectedMovie({ selectedMovieID, onCloseMovieID }) {
+    const [movie, setMovie] = useState({});
+    const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(function () {
+        setIsLoading(true);
+        fetchMovieByID();
+    }, [selectedMovieID]);
+
+    async function fetchMovieByID() {
+        const response = await fetch(`${DATA_URL}&i=${selectedMovieID}`);
+        const data = await response.json();
+
+        setMovie(data);
+        setIsLoading(false);
+    };
+
+    return (
+        <div className="details">
+            {isLoading ? <Loader /> : (
+                <>
+                    <header>
+                        <button onClick={onCloseMovieID} className="btn-back">&larr;</button>
+                        <img src={movie.Poster} alt={`An image of ${movie.Title} movie`} />
+
+                        <div className="details-overview">
+                            <h2>{movie.Title}</h2>
+                            <p>
+                                {movie.Released} &bull; {movie.Runtime}
+                            </p>
+                            <p>
+                                <span className="bold">⭐{movie.imdbRating}</span> IMDb Rating
+                            </p>
+                        </div>
+                    </header>
+
+                    <section>
+                        <div className="rating">
+                            <StarRating size={24} maxRating={10} />
+                        </div>
+                        <p>
+                            <em>{movie.Plot}</em>
+                        </p>
+                        <p>Starring <span className="italic bold">{movie.Actors}</span></p>
+                        <p>Directed by <span className="italic bold">{movie.Director}</span></p>
+                        <p>Written by <span className="italic bold">{movie.Writer}</span></p>
+                    </section>
+                </>
+            )}
+        </div>
+    )
+}
 
 export function WatchedMovies({ movie }) {
     return (

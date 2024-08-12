@@ -1,17 +1,17 @@
-export default function MoviesList({ movies }) {
+export default function MoviesList({ movies, onSelectMovieID }) {
 
     return (
-        <ul className="list">
+        <ul className="list list-movies">
             {movies?.map((movie) => (
-                <Movies movie={movie} key={movie.imdbID} />
+                <Movies movie={movie} key={movie.imdbID} onSelectMovieID={onSelectMovieID} />
             ))}
         </ul>
     );
 };
 
-function Movies({ movie }) {
+function Movies({ movie, onSelectMovieID }) {
     return (
-        <li >
+        <li onClick={() => onSelectMovieID(movie.imdbID)}>
             <img src={movie.Poster} alt={`${movie.Title} poster`} />
             <h3>{movie.Title}</h3>
             <div>
