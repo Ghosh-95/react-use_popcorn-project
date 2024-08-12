@@ -8,21 +8,27 @@ import { WatchSummery, WatchedMoviesList } from "./components/WatchBox.jsx";
 import Loader from "./components/Loader.jsx";
 
 export default function App() {
+    const [query, setQuery] = useState("inception");
     const [movies, setMovies] = useState([]);
     const [watched, setWatched] = useState(tempWatchedData);
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState('')
-
-    const query = "interstellar";
+    const [error, setError] = useState('');
 
 
     useEffect(() => {
+        if (query.length < 3) {
+            setMovies([]);
+            setError('');
+            return;
+        };
+
         fetchMovieData();
-    }, []);
+    }, [query]);
 
     async function fetchMovieData() {
         try {
             setIsLoading(true);
+            setError('');
 
             const response = await fetch(`${DATA_URL}&s=${query}`);
 
@@ -49,7 +55,7 @@ export default function App() {
     return (
         <>
             <Navbar movies={movies}>
-                <SearchInput />
+                <SearchInput query={query} setQuery={setQuery} />
                 <Results movies={movies} />
             </Navbar>
 

@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 export default function Navbar({ children }) {
     return (
         <nav className="nav-bar">
@@ -9,8 +7,7 @@ export default function Navbar({ children }) {
     );
 };
 
-export function SearchInput() {
-    const [query, setQuery] = useState("");
+export function SearchInput({ query, setQuery }) {
     return (
         <input
             className="search"
