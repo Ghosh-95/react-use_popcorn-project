@@ -43,7 +43,8 @@ body {
 
 .main {
   margin-top: 2.4rem;
-  height: calc(100vh - 7.2rem - 3 * 2.4rem);
+  /* height: calc(100vh - 7.2rem - 3 * 2.4rem); */
+  max-height: 100vh;
   display: flex;
   gap: 2.4rem;
   justify-content: center;
@@ -138,7 +139,18 @@ body {
 .list {
   list-style: none;
   padding: 0.8rem 0;
-  overflow: hidden;
+  height: 100vh;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.list::-webkit-scrollbar {
+  width: 8px;
+  background-color: #343a40;
+}
+
+.list::-webkit-scrollbar-thumb {
+  background-color: #6741d9;
 }
 
 .list-watched {
@@ -337,6 +349,29 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.loader {
+  border: 4px solid #fff;
+  border-radius: 50%;
+  height: 40px;
+  width: 40px;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  left: 35%;
+  border-top-color: #6741d9;
+  animation: loading 0.5s linear infinite;
+}
+
+
+@keyframes loading {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /*
