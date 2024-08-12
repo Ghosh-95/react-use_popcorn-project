@@ -18,35 +18,39 @@ export function WatchSummery({ watched }) {
                 </p>
                 <p>
                     <span>⭐️</span>
-                    <span>{avgImdbRating}</span>
+                    <span>{avgImdbRating.toFixed(1)}</span>
                 </p>
                 <p>
                     <span>🌟</span>
-                    <span>{avgUserRating}</span>
+                    <span>{avgUserRating.toFixed(1)}</span>
                 </p>
                 <p>
                     <span>⏳</span>
-                    <span>{avgRuntime} min</span>
+                    <span>{avgRuntime.toFixed(1)} min</span>
                 </p>
             </div>
         </div>
     )
 }
 
-export function WatchedMoviesList({ watched }) {
+export function WatchedMoviesList({ watched, onDeleteWatched }) {
     return (
         <ul className="list">
             {watched.map((movie) => (
-                <WatchedMovies movie={movie} key={movie.imdbID} />
+                <WatchedMovies movie={movie} key={movie.imdbID} onDeleteWatched={onDeleteWatched} />
             ))}
         </ul>
 
     );
 };
 
-export function SelectedMovie({ selectedMovieID, onCloseMovieID }) {
+export function SelectedMovie({ selectedMovieID, onCloseMovieID, onAddWatched, watched }) {
     const [movie, setMovie] = useState({});
     const [isLoading, setIsLoading] = useState(false);
+    const [userRating, setUserRating] = useState(0);
+
+    const isRated = watched.map(movie => movie.imdbID).includes(selectedMovieID);
+    const watchedUserRating = watched.find(movie => movie.imdbID === selectedMovieID)?.userRating;
 
     useEffect(function () {
         setIsLoading(true);
@@ -59,6 +63,21 @@ export function SelectedMovie({ selectedMovieID, onCloseMovieID }) {
 
         setMovie(data);
         setIsLoading(false);
+    };
+
+    function handleAdd() {
+        const newMovieObj = {
+            imdbID: movie.imdbID,
+            title: movie.Title,
+            year: movie.Year,
+            imdbRating: Number(movie.imdbRating),
+            runtime: Number(movie.Runtime.split(' ').at(0)),
+            poster: movie.Poster,
+            userRating,
+        };
+
+        onAddWatched(newMovieObj);
+        onCloseMovieID();
     };
 
     return (
@@ -82,7 +101,12 @@ export function SelectedMovie({ selectedMovieID, onCloseMovieID }) {
 
                     <section>
                         <div className="rating">
-                            <StarRating size={24} maxRating={10} />
+                            {isRated ? <p>You have rated this movie with ⭐<span className="bold">{watchedUserRating.toFixed(1)}</span></p> :
+                                <>
+                                    <StarRating size={24} maxRating={10} onSetRating={setUserRating} />
+                                    {userRating > 0 && <button className="btn-add" onClick={handleAdd}>+Add to List</button>}
+                                </>
+                            }
                         </div>
                         <p>
                             <em>{movie.Plot}</em>
@@ -97,11 +121,11 @@ export function SelectedMovie({ selectedMovieID, onCloseMovieID }) {
     )
 }
 
-export function WatchedMovies({ movie }) {
+export function WatchedMovies({ movie, onDeleteWatched }) {
     return (
         <li >
-            <img src={movie.Poster} alt={`${movie.Title} poster`} />
-            <h3>{movie.Title}</h3>
+            <img src={movie.poster} alt={`${movie.title} poster`} />
+            <h3>{movie.title}</h3>
             <div>
                 <p>
                     <span>⭐️</span>
@@ -115,6 +139,7 @@ export function WatchedMovies({ movie }) {
                     <span>⏳</span>
                     <span>{movie.runtime} min</span>
                 </p>
+                <button className="btn-delete" onClick={() => onDeleteWatched(movie.imdbID)}>X</button>
             </div>
         </li>
     )

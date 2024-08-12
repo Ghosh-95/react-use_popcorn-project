@@ -11,7 +11,7 @@ import ErrorMessage from "./components/ErrorMessage.jsx";
 export default function App() {
     const [query, setQuery] = useState("inception");
     const [movies, setMovies] = useState([]);
-    const [watched, setWatched] = useState(tempWatchedData);
+    const [watched, setWatched] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [selectedMovieID, setSelectedMovieID] = useState(null);
@@ -56,6 +56,14 @@ export default function App() {
         setSelectedMovieID(null);
     };
 
+    function handleAddWatched(movie) {
+        setWatched(watched => [...watched, movie]);
+    };
+
+    function handleDeleteWatched(id) {
+        setWatched(watched => watched.filter(movie => movie.imdbID !== id));
+    }
+
     return (
         <>
             <Navbar movies={movies}>
@@ -71,10 +79,10 @@ export default function App() {
                 </Box>
 
                 <Box>
-                    {selectedMovieID ? <SelectedMovie selectedMovieID={selectedMovieID} onCloseMovieID={handleCloseMovieID} /> : (
+                    {selectedMovieID ? <SelectedMovie selectedMovieID={selectedMovieID} onCloseMovieID={handleCloseMovieID} onAddWatched={handleAddWatched} watched={watched} /> : (
                         <>
                             <WatchSummery watched={watched} />
-                            <WatchedMoviesList watched={watched} />
+                            <WatchedMoviesList watched={watched} onDeleteWatched={handleDeleteWatched} />
                         </>
                     )}
                 </Box>
