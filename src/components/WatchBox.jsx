@@ -57,6 +57,15 @@ export function SelectedMovie({ selectedMovieID, onCloseMovieID, onAddWatched, w
         fetchMovieByID();
     }, [selectedMovieID]);
 
+    useEffect(function () {
+        document.title = `Movie | ${movie.Title}`;
+
+        // cleanup function
+        return () => {
+            document.title = "usePopCorn";
+        };
+    }, [movie.Title]);
+
     async function fetchMovieByID() {
         const response = await fetch(`${DATA_URL}&i=${selectedMovieID}`);
         const data = await response.json();
@@ -79,6 +88,20 @@ export function SelectedMovie({ selectedMovieID, onCloseMovieID, onAddWatched, w
         onAddWatched(newMovieObj);
         onCloseMovieID();
     };
+
+    useEffect(function () {
+        function callback(e) {
+            if (e.code === "Escape") {
+                onCloseMovieID();
+            };
+        };
+
+        document.addEventListener('keydown', callback);
+
+        return function () {
+            document.removeEventListener('keydown', callback)
+        };
+    }, [onCloseMovieID])
 
     return (
         <div className="details">
