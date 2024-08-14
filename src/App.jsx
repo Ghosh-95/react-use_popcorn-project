@@ -1,64 +1,20 @@
 import { useEffect, useState } from "react";
 
-import { DATA_URL, tempMovieData, tempWatchedData } from "./data.js.js";
+import { DATA_URL } from "./utils/data.js";
 import Navbar, { Results, SearchInput } from "./components/Navbar.jsx";
 import MoviesList from "./components/LeftBox.jsx";
 import Box from "./components/Box.jsx";
 import { WatchSummery, WatchedMoviesList, SelectedMovie } from "./components/WatchBox.jsx";
 import Loader from "./components/Loader.jsx";
 import ErrorMessage from "./components/ErrorMessage.jsx";
+import { useMovies } from "./utils/useMovies.js";
+import { useLocalStorageState } from "./utils/useLocalStorageState.js";
 
 export default function App() {
     const [query, setQuery] = useState("");
-    const [movies, setMovies] = useState([]);
-    const [watched, setWatched] = useState(function () {
-        const storedMovies = JSON.parse(localStorage.getItem("watchedMovies"));
-        return storedMovies;
-    });
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState('');
+    const [watched, setWatched] = useLocalStorageState([], "watchedMovies");
     const [selectedMovieID, setSelectedMovieID] = useState(null);
-
-
-    useEffect(() => {
-        const controller = new AbortController();
-        async function fetchMovieData() {
-            try {
-                setIsLoading(true);
-                setError('');
-
-                const response = await fetch(`${DATA_URL}&s=${query}`, { signal: controller.signal });
-
-                if (!response.ok) throw new Error("Something went wrong while fetching data!");
-
-                const data = await response.json();
-                if (data.Response === 'False') throw new Error("Movie not found");
-
-                setMovies(data.Search);
-                setError('');
-            } catch (error) {
-                if (error.name !== "AbortError") {
-                    setError(error.message);
-                }
-            } finally {
-                setIsLoading(false);
-            };
-        };
-
-        if (query.length < 3) {
-            setMovies([]);
-            setError('');
-            return;
-        };
-
-        fetchMovieData();
-
-        return () => {
-            controller.abort();
-        }
-    }, [query]);
-
-
+    const { movies, isLoading, error } = useMovies(query, handleCloseMovieID);
 
     function handleSelectMovieID(id) {
         setSelectedMovieID(curId => curId === id ? null : id);
