@@ -101,7 +101,11 @@ export function SelectedMovie({ selectedMovieID, onCloseMovieID, onAddWatched, w
         return function () {
             document.removeEventListener('keydown', callback)
         };
-    }, [onCloseMovieID])
+    }, [onCloseMovieID]);
+
+    useEffect(() => {
+        localStorage.setItem("watchedMovies", JSON.stringify(watched));
+    }, [watched]);
 
     return (
         <div className="details">

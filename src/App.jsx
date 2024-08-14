@@ -11,7 +11,10 @@ import ErrorMessage from "./components/ErrorMessage.jsx";
 export default function App() {
     const [query, setQuery] = useState("");
     const [movies, setMovies] = useState([]);
-    const [watched, setWatched] = useState([]);
+    const [watched, setWatched] = useState(function () {
+        const storedMovies = JSON.parse(localStorage.getItem("watchedMovies"));
+        return storedMovies;
+    });
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [selectedMovieID, setSelectedMovieID] = useState(null);
