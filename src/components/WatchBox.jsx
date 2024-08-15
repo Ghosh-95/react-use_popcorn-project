@@ -83,29 +83,14 @@ export function SelectedMovie({ selectedMovieID, onCloseMovieID, onAddWatched, w
             runtime: Number(movie.Runtime.split(' ').at(0)),
             poster: movie.Poster,
             userRating,
+            countRateDecision: rateCountRef.current,
         };
 
         onAddWatched(newMovieObj);
         onCloseMovieID();
     };
 
-    useEffect(function () {
-        function callback(e) {
-            if (e.code === "Escape") {
-                onCloseMovieID();
-            };
-        };
-
-        document.addEventListener('keydown', callback);
-
-        return function () {
-            document.removeEventListener('keydown', callback)
-        };
-    }, [onCloseMovieID]);
-
-    useEffect(() => {
-        localStorage.setItem("watchedMovies", JSON.stringify(watched));
-    }, [watched]);
+    useKey("Escape", onCloseMovieID);
 
     return (
         <div className="details">
