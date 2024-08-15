@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
-import { average, DATA_URL } from "../data.js.js";
+import { useEffect, useRef, useState } from "react";
+import { average, DATA_URL } from "../utils/data.js";
 import StarRating from "./StarRating.jsx";
 import Loader from "./Loader.jsx";
+import { useKey } from "../utils/useKey.js";
 
 export function WatchSummery({ watched }) {
     const avgImdbRating = average(watched.map((movie) => movie.imdbRating));
@@ -49,8 +50,13 @@ export function SelectedMovie({ selectedMovieID, onCloseMovieID, onAddWatched, w
     const [isLoading, setIsLoading] = useState(false);
     const [userRating, setUserRating] = useState(0);
 
+    const rateCountRef = useRef(0);
     const isRated = watched.map(movie => movie.imdbID).includes(selectedMovieID);
     const watchedUserRating = watched.find(movie => movie.imdbID === selectedMovieID)?.userRating;
+
+    useEffect(function () {
+        if (userRating) rateCountRef.current += 1;
+    }, [userRating]);
 
     useEffect(function () {
         setIsLoading(true);
